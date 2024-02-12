@@ -16,13 +16,7 @@ export class Sidebar {
         const sidebarUL = document.querySelector(this.SIDEBAR_UL_SELECTOR)
 
         for (const item of this.SIDEBAR_ITEMS) {
-
-            console.log({ item })
-
             const { title, iconPath, href } = item
-
-            console.log({ title, iconPath, href })
-
 
             const listItem = document.createElement("li")
             const anchor = document.createElement("a")
