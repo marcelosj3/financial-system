@@ -1,0 +1,102 @@
+/* Variables */
+:root {
+  --transition: 300ms;
+  --logo-width: 40px;
+  --section-ml: 60px;
+  --sidebar-width: 400px;
+  --sidebar-hidden-left-pos: calc(var(--sidebar-width) - var(--section-ml));
+  --sidebar-img-size: 28px;
+  --sidebar-ul-gap: 8px;
+  --sidebar-li-gap: 16px;
+  --sidebar-li-fs: 18px;
+  --sidebar-li-padding: 18px;
+  --sidebar-li-active-border-radius: 24px;
+  --sidebar-li-active-bg: var(--bs-white);
+  --navbar-height: 60px;
+  --navbar-profile-image-mw: 40px;
+}
+
+/* Sidebar */
+#sidebar {
+  visibility: visible;
+  transform: translateX(calc(-1 * var(--sidebar-hidden-left-pos)));
+
+  header {
+    height: (var(--navbar-height));
+
+    img {
+      width: var(--logo-width);
+    }
+  }
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sidebar-ul-gap);
+
+    a {
+      text-decoration: none;
+      color: rgba(var(--bs-white));
+
+      li {
+        display: flex;
+        align-items: center;
+        justify-content: start;
+        gap: var(--sidebar-li-gap);
+        font-size: var(--sidebar-li-fs);
+        padding: var(--sidebar-li-padding);
+
+        img {
+          width: var(--sidebar-img-size);
+          height: var(--sidebar-img-size);
+        }
+      }
+    }
+
+    li.active {
+      background-color: var(--sidebar-li-active-bg);
+      border-top-left-radius: var(--sidebar-li-active-border-radius);
+      border-bottom-left-radius: var(--sidebar-li-active-border-radius);
+
+      color: rgba(var(--bs-primary-rgb), var(--bs-bg-opacity)) !important;
+      fill: rgba(var(--bs-primary-rgb), var(--bs-bg-opacity)) !important;
+    }
+  }
+}
+
+#sidebar.show {
+  transform: none;
+}
+
+#sidebar.show + section {
+  margin-left: var(--sidebar-width);
+}
+
+#sidebar:not(.show) ul li {
+  justify-content: end;
+  transition: var(--transition);
+
+  img {
+    transition: var(--transition);
+    order: 1;
+  }
+
+  span {
+    opacity: 0;
+  }
+}
+
+/* section */
+section {
+  transition: var(--transition);
+  margin-left: var(--section-ml);
+}
+
+/* Navbar */
+nav.navbar {
+  height: var(--navbar-height);
+}
+
+nav.navbar .profile-image {
+  max-width: var(--navbar-profile-image-mw);
+}
