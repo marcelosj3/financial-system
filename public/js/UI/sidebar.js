@@ -1,33 +1,54 @@
 export class Sidebar {
     SIDEBAR_UL_SELECTOR = "#sidebar ul"
     SIDEBAR_ITEMS = [
-        { title: "Dashboard", href: "/" },
-        { title: "Customers", href: "../../pages/customers.html" },
-        { title: "Projects", href: "../../pages/projects.html" },
-        { title: "Orders", href: "../../pages/orders.html" },
-        { title: "Inventory", href: "../../pages/inventory.html" },
-        { title: "Accounts", href: "../../pages/accounts.html" },
-        { title: "Tasks", href: "../../pages/tasks.html" },
+        { title: "Dashboard", iconPath: "../../assets/icons/gauge-high-solid.svg", href: "/" },
+        { title: "Customers", iconPath: "../../assets/icons/users-solid.svg", href: "../../pages/customers.html" },
+        { title: "Projects", iconPath: "../../assets/icons/clipboard-regular.svg", href: "../../pages/projects.html" },
+        { title: "Orders", iconPath: "../../assets/icons/bag-shopping-solid.svg", href: "../../pages/orders.html" },
+        { title: "Inventory", iconPath: "../../assets/icons/warehouse-solid.svg", href: "../../pages/inventory.html" },
+        { title: "Accounts", iconPath: "../../assets/icons/user-regular.svg", href: "../../pages/accounts.html" },
+        { title: "Tasks", iconPath: "../../assets/icons/list-check-solid.svg", href: "../../pages/tasks.html" },
     ]
 
     constructor() { }
 
-    injectItems() {
+    async injectItems() {
         const sidebarUL = document.querySelector(this.SIDEBAR_UL_SELECTOR)
 
-        this.SIDEBAR_ITEMS.forEach(({ title, href }, index) => {
+        for (const item of this.SIDEBAR_ITEMS) {
+
+            console.log({ item })
+
+            const { title, iconPath, href } = item
+
+            console.log({ title, iconPath, href })
+
+
             const listItem = document.createElement("li")
             const anchor = document.createElement("a")
             const span = document.createElement("span")
+            const svgContainer = document.createElement("div")
 
+            const svg = await this.fetchSVG(iconPath)
             this.setActive(listItem, title, href)
 
+            svgContainer.innerHTML = svg
             span.textContent = title
+            listItem.title = title
+
+            listItem.appendChild(svgContainer)
             listItem.appendChild(span)
             anchor.appendChild(listItem)
             anchor.href = href
             sidebarUL.appendChild(anchor)
-        })
+        }
+    }
+
+    async fetchSVG(iconPath) {
+        return await fetch(iconPath)
+            .then(response => response.text())
+            .then(svgData => svgData)
+            .catch(error => console.error("Error loading SVG:", error));
     }
 
     setActive(listItem, title, href) {

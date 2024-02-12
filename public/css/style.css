@@ -46,7 +46,7 @@
         font-size: var(--sidebar-li-fs);
         padding: var(--sidebar-li-padding);
 
-        img {
+        svg {
           width: var(--sidebar-img-size);
           height: var(--sidebar-img-size);
         }
@@ -76,9 +76,9 @@
   justify-content: end;
   transition: var(--transition);
 
-  img {
-    transition: var(--transition);
+  div {
     order: 1;
+    transition: var(--transition);
   }
 
   span {
