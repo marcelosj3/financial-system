@@ -16,6 +16,12 @@
   --navbar-profile-image-mw: 40px;
 }
 
+.not-found {
+  h1 {
+    font-size: 160px;
+  }
+}
+
 /* Sidebar */
 #sidebar {
   visibility: visible;
