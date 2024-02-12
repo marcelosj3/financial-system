@@ -1,0 +1,9 @@
+/* Variables */
+:root {
+  --navbar-profile-image-mw: 40px;
+}
+
+/* Navbar */
+.navbar .profile-image {
+  max-width: var(--navbar-profile-image-mw);
+}

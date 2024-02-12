@@ -1,0 +1,8 @@
+{
+  "name": "John Doe",
+  "role": "Super admin",
+  "image": {
+    "src": "../assets/images/pexels-vazhnik-7562139.jpg",
+    "alt": "Man looking to the right"
+  }
+}
