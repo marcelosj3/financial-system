@@ -1,3 +1,4 @@
+import { Invoices } from "./invoices.js";
 import { Profile } from "./profile.js";
 
 /**
@@ -6,12 +7,14 @@ import { Profile } from "./profile.js";
  */
 export class Backend {
     profile = {}
+    invoices = {}
 
-    constructor({ profile } = {}) {
+    constructor({ profile, invoices } = {}) {
         this.profile = profile || new Profile()
+        this.invoices = invoices || new Invoices()
     }
 
     async injectData() {
-        await this.profile.injectData()
+        Promise.all([this.profile.injectData(), this.invoices.injectData()])
     }
 }

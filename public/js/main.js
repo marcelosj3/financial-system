@@ -1,6 +1,8 @@
 import { UI } from "./UI/index.js";
 import { Backend } from './backend/index.js';
 
-// Injects backend data
+// Create a new instance of Backend and inject data
 new Backend().injectData();
-new UI().injectUI()
+
+// Create a new instance of UI and inject UI changes
+new UI().injectUI();
