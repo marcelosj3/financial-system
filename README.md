@@ -11,7 +11,6 @@ The primary objective of this project is to create a user-friendly web page that
 The Financial System leverages the following technologies:
 
 - **Bootstrap v5.3.2**
-- **jQuery v3.7.1**
 - **JavaScript**
 - **CSS**
 - **HTML**
