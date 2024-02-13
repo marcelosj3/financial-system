@@ -64,9 +64,21 @@
 
         <main class="p-4">
             <section>
-
-                <header>
-                    <h3>Invoice list</h3>
+                <header class="d-flex justify-content-between">
+                    <h3 class="text-nowrap">Invoice list</h3>
+                    <div class="col-4">
+                        <div class="input-filter input-group">
+                            <label class="input-group-text" for="filterOptions">Filter</label>
+                            <select class="form-select" id="filterOptions">
+                                <option selected>Choose...</option>
+                                <option value="issueMonth">Issue Month</option>
+                                <option value="billingMonth">Billing Month</option>
+                                <option value="paymentMonth">Payment Month</option>
+                                <option value="status">Status</option>
+                            </select>
+                            <input type="text" class="form-control">
+                        </div>
+                    </div>
                 </header>
                 <div class="table table-responsive">
                     <table class="table align-middle table-striped">
