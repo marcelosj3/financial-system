@@ -24,12 +24,7 @@ export class Table {
     getHeadersToKeys() {
         const selector = `${this.TABLE_CONTAINER_SELECTOR} ${this.TABLE_HEADERS_SELECTOR}`;
         const headers = document.querySelectorAll(selector);
-        return Array.from(headers).map(header => {
-            const text = header.textContent;
-
-            // Lowercases the first character of the string, removes spaces and apostrophes
-            return text.slice(0, 1).toLowerCase() + text.slice(1).replaceAll(" ", "").replaceAll("'", "");
-        });
+        return Array.from(headers).map(header => this.utils.formatStringToKey(header.textContent));
     }
 
     /**
@@ -53,6 +48,7 @@ export class Table {
         const selector = `${this.TABLE_CONTAINER_SELECTOR} ${this.TABLE_BODY_SELECTOR}`;
         const tableBody = document.querySelector(selector);
         const headersKeys = this.getHeadersToKeys();
+        tableBody.innerHTML = ""
 
         dataList.forEach(data => {
             const row = document.createElement("tr");

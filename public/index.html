@@ -70,15 +70,16 @@
                     <h3 class="text-nowrap">Invoice list</h3>
                     <div class="col-4">
                         <div class="input-filter input-group">
-                            <label class="input-group-text" for="filterOptions">Filter</label>
-                            <select class="form-select" id="filterOptions">
+                            <label class="input-group-text">Filter</label>
+                            <select class="form-select" id="invoicesFilterOptions">
                                 <option selected>Choose...</option>
                                 <option value="issueMonth">Issue Month</option>
                                 <option value="billingMonth">Billing Month</option>
                                 <option value="paymentMonth">Payment Month</option>
                                 <option value="status">Status</option>
                             </select>
-                            <input type="text" class="form-control">
+                            <input type="text" class="form-control" value="Select a filter option!" disabled>
+                            <select class="form-select d-none" id="invoiceStatusOptions"></select>
                         </div>
                     </div>
                 </header>

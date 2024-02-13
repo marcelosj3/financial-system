@@ -1,4 +1,5 @@
 export class Utils {
+    // Define supported locations with corresponding currency and locale
     LOCATIONS = {
         'pt-br': { currency: 'BRL', locale: 'pt-BR' },
         'en-us': { currency: 'USD', locale: 'en-US' }
@@ -7,14 +8,33 @@ export class Utils {
     currency = '';
     locale = '';
 
+    /**
+     * Initializes the Utils class with the specified location.
+     */
     constructor(location = 'pt-br') {
-        const permittedLocations = Object.keys(this.LOCATIONS)
-        if (!permittedLocations.includes(location))
-            throw new Error(`Location value should be one of the following: '${permittedLocations.join(", ")}'.`)
+        const permittedLocations = Object.keys(this.LOCATIONS);
+        if (!permittedLocations.includes(location)) {
+            throw new Error(`Invalid location value '${location}'. Permitted locations are: '${permittedLocations.join(", ")}'.`);
+        }
 
+        // Set currency and locale based on the provided location
         const { currency, locale } = this.LOCATIONS[location];
         this.currency = currency;
         this.locale = locale;
+    }
+
+    /**
+     * Converts a string to a key format by making the first letter lowercase
+     * and removing spaces and apostrophes.
+     */
+    formatStringToKey(inputString) {
+        const words = inputString.split(" ");
+        return words.map((word, index) => {
+            let string = word.toLowerCase().replace(/['\s]/g, '');
+            if (index === 0) return string;
+
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }).join("");
     }
 
     /**
@@ -31,11 +51,27 @@ export class Utils {
 
     /**
      * Formats the given date string into a localized date string.
-     * @param {string} dateString - The date string to be formatted.
-     * @returns {string} - The formatted date string.
      */
-    formatDate(dateString) {
-        return new Date(dateString).toLocaleDateString(this.locale);
+    formatDate({ date, options }) {
+        const dateValue = date ?? new Date();
+        const optionsValue = options ?? {};
+
+        return dateValue.toLocaleDateString(this.locale, optionsValue);
+    }
+
+    /**
+     * Checks if the provided value is a valid date.
+     */
+    isValidDate(date) {
+        if (date == null) return false;
+
+        try {
+            const parsedDate = new Date(date);
+            if (isNaN(parsedDate.getTime())) return false;
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 
     /**
@@ -46,7 +82,7 @@ export class Utils {
             // Try fetching from local storage, fallback to JSON file if not available
             return this.fetchDataFromLocalStorage(localStorageKey) || await this.fetchDataFromJSON(path, localStorageKey);
         } catch (error) {
-            console.error('Error fetching data', error);
+            console.error('Error fetching data:', error);
         }
     }
 
@@ -64,9 +100,7 @@ export class Utils {
     async fetchDataFromJSON(path, localStorageKey) {
         const response = await fetch(path);
 
-        if (!response.ok) {
-            throw new Error('Failed to fetch data.');
-        }
+        if (!response.ok) throw new Error('Failed to fetch data.');
 
         const json = await response.json();
 
