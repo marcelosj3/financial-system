@@ -67,7 +67,6 @@ export class Table {
         tableBody.appendChild(emptyState)
     }
 
-
     /**
      * Injects table elements into the HTML based on the provided data.
      */

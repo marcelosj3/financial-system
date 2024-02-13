@@ -14,6 +14,8 @@ export class Invoices {
     FILTER_OPTIONS_SELECTOR = "#invoicesFilterOptions";
     FILTER_INPUT_SELECTOR = "input";
     FILTER_SELECT_SELECTOR = "#invoiceStatusOptions";
+    QUERY_PARAMS_FILTER_BY_KEY = "filter_by";
+    QUERY_PARAMS_FILTER_VALUE_KEY = "filter_value";
 
     utils = {};
     table = {};
@@ -88,7 +90,10 @@ export class Invoices {
     /**
      * Callback function for handling changes in filter options.
      */
-    selectCallback(option, input, select) {
+    selectCallback({ option, value, input, select }) {
+        const defaultValue = value ?? undefined
+        console.log({ option, value })
+
         input.disabled = false;
         input.value = "";
 
@@ -97,21 +102,32 @@ export class Invoices {
         input.classList.toggle("d-none", isStatusOption);
         select.classList.toggle("d-none", !isStatusOption);
 
-        if (isStatusOption) return { filterBy: "status", filterValue: select.value };
+        if (isStatusOption) return this.setQueryParamsAndReturnFilterValues({ filterBy: "status", filterValue: defaultValue ?? select.value })
 
         if (option.toLowerCase().includes("month")) {
             input.type = "month";
-            const isValidDate = this.utils.isValidDate(this.filterValue);
-            const isSameFilterOption = this.filterBy != option;
-            if (isValidDate && isSameFilterOption) input.value = this.filterValue;
-            else input.valueAsDate = new Date();
-            return { filterBy: option, filterValue: input.value };
+            const isValidDate = this.utils.isValidDate(defaultValue ?? this.filterValue);
+            const isSameFilterOption = this.filterBy !== option;
+            if (isValidDate && isSameFilterOption) input.value = defaultValue ?? this.filterValue;
+            else input.valueAsDate = !!defaultValue ? new Date(defaultValue) : new Date();
+            return this.setQueryParamsAndReturnFilterValues({ filterBy: option, filterValue: defaultValue ?? input.value })
         }
 
         input.type = "text";
         input.value = "Select a filter option!";
         input.disabled = true;
+        this.utils.deleteQueryParams(this.QUERY_PARAMS_FILTER_BY_KEY);
+        this.utils.deleteQueryParams(this.QUERY_PARAMS_FILTER_VALUE_KEY);
         return { filterBy: null, filterValue: null };
+    }
+
+    /**
+     * Sets query parameters for filter options and returns the filter information.
+     */
+    setQueryParamsAndReturnFilterValues({ filterBy, filterValue }) {
+        this.utils.setQueryParams(this.QUERY_PARAMS_FILTER_BY_KEY, filterBy);
+        this.utils.setQueryParams(this.QUERY_PARAMS_FILTER_VALUE_KEY, filterValue);
+        return { filterBy, filterValue };
     }
 
     /**
@@ -119,11 +135,10 @@ export class Invoices {
      */
     filterOptionsEventListener(e, input, select) {
         const selection = e.target.value;
-        const response = this.selectCallback(selection, input, select);
+        const response = this.selectCallback({ option: selection, input, select });
         this.filterBy = response.filterBy;
         this.filterValue = response.filterValue;
-        const data = this.filterCallback(response);
-        this.table.injectData({ dataList: data || this.invoices, cellCallback: this.tableCellCallback });
+        this.filterAndInjectIntoTable(response);
     }
 
     /**
@@ -131,28 +146,54 @@ export class Invoices {
      */
     filterInputEventListener(e) {
         this.filterValue = e.target.value;
-        const data = this.filterCallback({ filterBy: this.filterBy, filterValue: e.target.value });
+        const response = this.setQueryParamsAndReturnFilterValues({ filterBy: this.filterBy, filterValue: e.target.value });
+        this.filterAndInjectIntoTable(response);
+    }
+
+    /**
+     * Filter data and inject it into the table.
+     */
+    filterAndInjectIntoTable({ filterBy, filterValue }) {
+        const data = this.filterCallback({ filterBy, filterValue });
         this.table.injectData({ dataList: data || this.invoices, cellCallback: this.tableCellCallback });
     }
 
     /**
      * Initializes and configures the filter for invoices.
      */
-    filterInvoices() {
-        this.input.FILTER_DATA = this.invoices;
-
-        const statusOptions = ["Issued", "Charge made", "Payment overdue", "Payment made"];
-        const { filterOptions, input, select } = this.input.initializeFilterInputs({ selectOptions: statusOptions });
-
+    filterInvoices({ filterOptions, input, select }) {
         const that = this;
         const addEventListeners = [
             { element: filterOptions, event: "change", eventListener: function (e) { return that.filterOptionsEventListener(e, input, select); } },
             { element: input, event: "change", eventListener: function (e) { return that.filterInputEventListener(e); } },
             { element: select, event: "change", eventListener: function (e) { return that.filterInputEventListener(e); } },
         ];
+
         for (const { element, event, eventListener } of addEventListeners) {
             element.addEventListener(event, eventListener);
         }
+    }
+
+    /**
+     * Handle query parameters for initial setup.
+     */
+    handleQueryParams({ filterOptions, input, select }) {
+        const queryParams = this.utils.fetchQueryParams();
+        const filterBy = queryParams.get("filter_by");
+        const filterValue = queryParams.get("filter_value");
+
+        if (!filterBy || !filterValue) return false;
+
+        this.filterBy = filterBy;
+        this.filterValue = filterValue;
+
+        filterOptions.value = filterBy;
+
+        const response = this.selectCallback({ option: filterBy, value: filterValue, input, select });
+        if (filterBy === "status") select.value = filterValue;
+        this.filterAndInjectIntoTable(response);
+
+        return true;
     }
 
     /**
@@ -160,7 +201,12 @@ export class Invoices {
      */
     async injectData() {
         await this.fetchInvoices();
-        this.filterInvoices();
-        this.table.injectData({ dataList: this.invoices, cellCallback: this.tableCellCallback });
+        this.input.FILTER_DATA = this.invoices;
+        const statusOptions = ["Issued", "Charge made", "Payment overdue", "Payment made"];
+        const { filterOptions, input, select } = this.input.initializeFilterInputs({ selectOptions: statusOptions });
+
+        this.filterInvoices({ statusOptions, filterOptions, input, select });
+        const hasQueryParams = this.handleQueryParams({ filterOptions, input, select });
+        if (!hasQueryParams) this.table.injectData({ dataList: this.invoices, cellCallback: this.tableCellCallback, queryParams: { filterBy: this.filterBy, filterValue: this.filterValue } });
     }
 }

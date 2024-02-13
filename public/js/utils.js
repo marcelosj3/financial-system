@@ -52,7 +52,7 @@ export class Utils {
     /**
      * Formats the given date string into a localized date string.
      */
-    formatDate({ date, options }) {
+    formatDate({ date, options } = {}) {
         const dateValue = date ?? new Date();
         const optionsValue = options ?? {};
 
@@ -88,6 +88,8 @@ export class Utils {
 
     /**
      * Fetches data from local storage.
+     * @param {string} localStorageKey - The key for local storage.
+     * @returns {Object|null} - The fetched data or null if not available.
      */
     fetchDataFromLocalStorage(localStorageKey) {
         const storedData = localStorage.getItem(localStorageKey);
@@ -108,5 +110,38 @@ export class Utils {
         localStorage.setItem(localStorageKey, JSON.stringify(json));
 
         return json;
+    }
+
+    /**
+     * Fetches query parameters from the current URL.
+     */
+    fetchQueryParams() {
+        return new URLSearchParams(window.location.search);
+    }
+
+    /**
+     * Sets a query parameter in the current URL.
+     */
+    setQueryParams(key, value) {
+        const searchParams = this.fetchQueryParams();
+        searchParams.set(key, value);
+        this.pushQueryParamsState(searchParams);
+    }
+
+    /**
+     * Deletes a query parameter from the current URL.
+     */
+    deleteQueryParams(key) {
+        const searchParams = this.fetchQueryParams();
+        searchParams.delete(key);
+        this.pushQueryParamsState(searchParams);
+    }
+
+    /**
+     * Pushes the updated query parameters to the browser history.
+     */
+    pushQueryParamsState(searchParams) {
+        const newRelativePathQuery = window.location.pathname + '?' + searchParams.toString();
+        history.pushState(null, '', newRelativePathQuery);
     }
 }
