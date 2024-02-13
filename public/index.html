@@ -9,8 +9,7 @@
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/bootstrap-override.css">
     <link rel="stylesheet" href="css/style.css">
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/jquery.min.js"></script>
+
 </head>
 
 <body>
@@ -63,11 +62,37 @@
             </div>
         </nav>
 
-        <main></main>
+        <main class="p-4">
+            <section>
+
+                <header>
+                    <h3>Invoice list</h3>
+                </header>
+                <div class="table table-responsive">
+                    <table class="table align-middle table-striped">
+                        <thead>
+                            <tr>
+                                <th class="fw-bold text-nowrap">Payer's Name</th>
+                                <th class="fw-bold text-nowrap">Identification Number</th>
+                                <th class="fw-bold text-nowrap">Issue Date</th>
+                                <th class="fw-bold text-nowrap">Billing Date</th>
+                                <th class="fw-bold text-nowrap">Payment Date</th>
+                                <th class="fw-bold text-nowrap">Value</th>
+                                <th class="fw-bold text-nowrap">Invoice Document</th>
+                                <th class="fw-bold text-nowrap">Payment Document</th>
+                                <th class="fw-bold text-nowrap">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
 
     </section>
 
     <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module" src="js/main.js"></script>
 </body>
 
