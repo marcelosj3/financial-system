@@ -14,11 +14,16 @@
   --sidebar-li-active-bg: var(--bs-white);
   --navbar-height: 60px;
   --navbar-profile-image-mw: 40px;
+  --not-found-heading-fs: 160px;
+  --table-empty-state-section-height: 600px;
+  --table-empty-state-heading-fs: 40px;
+  --table-empty-state-paragraph-fs: 18;
 }
 
+/* Not found page */
 .not-found {
   h1 {
-    font-size: 160px;
+    font-size: var(--not-found-heading-fs);
   }
 }
 
@@ -105,4 +110,24 @@ nav.navbar {
 
 nav.navbar .profile-image {
   max-width: var(--navbar-profile-image-mw);
+}
+
+/* Table */
+table td.empty-state {
+  section {
+    height: var(--table-empty-state-section-height);
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    h6 {
+      font-size: var(--table-empty-state-heading-fs);
+    }
+
+    p {
+      font-size: var(--table-empty-state-paragraph-fs);
+    }
+  }
 }

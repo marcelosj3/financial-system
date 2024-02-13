@@ -41,6 +41,33 @@ export class Table {
         row.appendChild(cell);
     }
 
+    createEmptyStateHTML(headersLength) {
+        const row = document.createElement("tr")
+        const cell = document.createElement("td")
+        const section = document.createElement("section")
+
+        const heading = document.createElement("h6")
+        const paragraph = document.createElement("p")
+
+        heading.textContent = "No results found for these filters! "
+        paragraph.textContent = "Let's try something else."
+        cell.setAttribute('colspan', headersLength)
+        cell.classList.add("empty-state")
+
+        section.appendChild(heading)
+        section.appendChild(paragraph)
+        cell.appendChild(section)
+        row.appendChild(cell)
+        return row
+    }
+
+
+    injectEmptyState(tableBody, headersLength) {
+        const emptyState = this.createEmptyStateHTML(headersLength)
+        tableBody.appendChild(emptyState)
+    }
+
+
     /**
      * Injects table elements into the HTML based on the provided data.
      */
@@ -49,6 +76,8 @@ export class Table {
         const tableBody = document.querySelector(selector);
         const headersKeys = this.getHeadersToKeys();
         tableBody.innerHTML = ""
+
+        if (!dataList.length) this.injectEmptyState(tableBody, headersKeys.length)
 
         dataList.forEach(data => {
             const row = document.createElement("tr");
