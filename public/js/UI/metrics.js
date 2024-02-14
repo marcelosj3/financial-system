@@ -60,11 +60,9 @@ export class Metrics {
         return container
     }
 
-
-    // span class="badge bg-secondary">New</span>
-
     injectCards({ container, data }) {
         const cardsContainer = container.querySelector(this.CARDS_CONTAINER_SELECTOR)
+        cardsContainer.innerHTML = ""
 
         if (!data) return
 

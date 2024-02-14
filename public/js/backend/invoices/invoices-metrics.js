@@ -95,8 +95,6 @@ export class InvoicesMetrics {
      * Callback function for handling filter selection changes.
      */
     selectCallback({ option, input, select, paragraph, value }) {
-        const defaultValue = value ?? this.filterValue;
-
         const utils = this.utils;
         const formatMonth = (dateValue) => utils.formatDate({ date: dateValue, options: { year: "numeric", month: "numeric" } }).split("/").reverse().join("-");
 
@@ -145,6 +143,8 @@ export class InvoicesMetrics {
             const response = filters[option](option, this.filterValue);
             this.filterBy = response.filterBy;
             this.filterValue = response.filterValue;
+            utils.setQueryParams(this.QUERY_PARAMS_FILTER_BY_KEY, response.filterBy)
+            utils.setQueryParams(this.QUERY_PARAMS_FILTER_VALUE_KEY, formatMonth(response.filterValue))
             return response;
         }
 
@@ -154,6 +154,9 @@ export class InvoicesMetrics {
         input.disabled = true;
         this.filterBy = null;
         this.filterValue = null;
+        this.utils.deleteQueryParams(this.QUERY_PARAMS_FILTER_BY_KEY);
+        this.utils.deleteQueryParams(this.QUERY_PARAMS_FILTER_VALUE_KEY);
+        return { filterBy: null, filterValue: null };
     }
 
     /**
@@ -164,6 +167,7 @@ export class InvoicesMetrics {
         const response = this.selectCallback({ option: selection, input, select, paragraph });
         this.filterBy = response.filterBy;
         this.filterValue = response.filterValue;
+        this.filterAndInjectData(response)
     }
 
     /**
@@ -187,6 +191,7 @@ export class InvoicesMetrics {
         }
 
         this.filterValue = inputValue;
+        this.filterAndInjectData({ filterBy: this.filterBy, filterValue: this.filterValue })
     }
 
     /**
@@ -221,6 +226,96 @@ export class InvoicesMetrics {
     }
 
     /**
+    * Callback function for filtering data based on filter options.
+    */
+    filterCallback({ filterBy, filterValue }) {
+        // Define filters for different time periods
+        const filters = {
+            year: (data, value) => data.filter(({ issueDate, billingDate, paymentDate }) => {
+                const year = value.getFullYear();
+                const dates = [issueDate, billingDate, paymentDate].map((date) => {
+                    if (!date) return false;
+                    return new Date(date).getFullYear() === year;
+                });
+                // Return true if at least one date matches the filter
+                return dates.some((val) => val);
+            }),
+            trimester: (data, value) => data.filter(({ issueDate, billingDate, paymentDate }) => {
+                // Calculate the first day of the trimester
+                const firstDayOfFirstMonth = new Date(value);
+                firstDayOfFirstMonth.setDate(1);
+                firstDayOfFirstMonth.setHours(6, 0, 0, 0);
+
+                // Calculate the last day of the trimester
+                const lastDayOfLastMonth = new Date(value);
+                lastDayOfLastMonth.setMonth(lastDayOfLastMonth.getMonth() + 4);
+                lastDayOfLastMonth.setDate(0);
+                lastDayOfLastMonth.setHours(23, 59, 59, 59);
+
+                // Check if the date falls within the trimester
+                const dates = [issueDate, billingDate, paymentDate].map((date) => {
+                    if (!date) return false;
+                    const dateValue = new Date(date);
+                    return dateValue > firstDayOfFirstMonth && dateValue < lastDayOfLastMonth;
+                });
+                // Return true if at least one date matches the filter
+                return dates.some((val) => val);
+            }),
+            month: (data, value) => data.filter(({ issueDate, billingDate, paymentDate }) => {
+                const month = value.getMonth();
+                const year = value.getFullYear();
+
+                // Check if the date falls within the selected month
+                const dates = [issueDate, billingDate, paymentDate].map((date) => {
+                    if (!date) return false;
+                    const dateValue = new Date(date);
+                    return dateValue.getMonth() === month && dateValue.getFullYear() === year;
+                });
+                // Return true if at least one date matches the filter
+                return dates.some((val) => val);
+            }),
+        };
+
+        // Return null if filterBy is not provided
+        if (!filterBy) return null;
+
+        // Apply the selected filter and return the filtered data
+        const data = filters[filterBy](this.invoices, filterValue);
+        return data;
+    }
+
+
+    /**
+     * Handle query parameters for initial setup.
+     */
+    handleQueryParams({ filterOptions, input, select, paragraph }) {
+        const queryParams = this.utils.fetchQueryParams();
+        const filterBy = queryParams.get(this.QUERY_PARAMS_FILTER_BY_KEY);
+        const queryParamsFilterByValue = queryParams.get(this.QUERY_PARAMS_FILTER_VALUE_KEY)
+        const filterValue = new Date(new Date(queryParamsFilterByValue).setDate(new Date(queryParamsFilterByValue).getDate() + 1));
+
+        if (!filterBy || !filterValue) return false;
+
+        this.filterBy = filterBy;
+        this.filterValue = filterValue;
+
+        filterOptions.value = filterBy;
+
+        const response = this.selectCallback({ option: filterBy, value: filterValue, input, select, paragraph });
+        this.filterAndInjectData(response);
+
+        return true;
+    }
+
+    /**
+    * Filter data and inject it into the HTML elements.
+    */
+    filterAndInjectData({ filterBy, filterValue }) {
+        const data = this.filterCallback({ filterBy, filterValue });
+        this.injectData({ data: data || this.invoices });
+    }
+
+    /**
      * Injects data into the Metrics class.
      */
     injectData({ data }) {
@@ -238,6 +333,7 @@ export class InvoicesMetrics {
         const trimesterParagraph = document.querySelector(`${this.METRICS_CONTAINER_SELECTOR} ${this.FILTER_PARAGRAPH_SELECTOR}`);
         this.filterMetrics({ filterOptions, input, select, paragraph: trimesterParagraph });
 
-        this.injectData({ data: this.invoices });
+        const hasQueryParams = this.handleQueryParams({ filterOptions, input, select, paragraph: trimesterParagraph });
+        if (!hasQueryParams) this.injectData({ data: this.invoices });
     }
 }
