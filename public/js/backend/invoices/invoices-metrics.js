@@ -117,17 +117,16 @@ export class InvoicesMetrics {
             },
             "trimester": (filterBy, filterValue) => {
                 const value = filterValue ?? new Date();
-                const date = new Date(new Date(value).setDate(15));
+                const date = new Date(new Date(value).setDate(new Date(value).getDate() + 1));
                 input.classList.remove("d-none");
                 paragraph.classList.remove("d-none");
                 input.type = "month";
                 const month = formatMonth(date);
                 input.value = month;
-                const nextThreeMonthsDate = new Date(date.setMonth(date.getMonth() + 3));
+                const nextThreeMonthsDate = new Date(new Date(date).setMonth(date.getMonth() + 3));
                 const nextThreeMonthsValue = formatMonth(nextThreeMonthsDate);
                 paragraph.textContent = `${month} to ${nextThreeMonthsValue}`;
                 input.style.width = `${paragraph.clientWidth + 40}px`;
-
                 return { filterBy, filterValue: date };
             },
             "month": (filterBy, filterValue) => {
