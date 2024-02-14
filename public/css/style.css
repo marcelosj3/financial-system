@@ -18,6 +18,8 @@
   --table-empty-state-section-height: 600px;
   --table-empty-state-heading-fs: 40px;
   --table-empty-state-paragraph-fs: 18;
+  --metrics-card-bg-opacity: 0.7;
+  --metrics-card-max-width: 600px;
 }
 
 /* Not found page */
@@ -129,5 +131,26 @@ table td.empty-state {
     p {
       font-size: var(--table-empty-state-paragraph-fs);
     }
+  }
+}
+
+/* Metrics */
+
+section.cards {
+  .card {
+    transition: var(--transition);
+
+    background-color: rgba(
+      var(--bs-primary-rgb),
+      var(--metrics-card-bg-opacity)
+    );
+
+    max-width: var(--metrics-card-max-width);
+  }
+
+  .card:hover {
+    transition: var(--transition);
+    box-shadow: var(--bs-box-shadow-lg);
+    transform: scale(1.01);
   }
 }

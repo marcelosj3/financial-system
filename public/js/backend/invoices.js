@@ -1,4 +1,5 @@
 import { Input } from "../UI/input.js";
+import { Metrics } from "../UI/metrics.js";
 import { Table } from "../UI/table.js";
 import { Utils } from "../utils.js";
 
@@ -9,6 +10,8 @@ import { Utils } from "../utils.js";
 export class Invoices {
     INVOICES_JSON_PATH = "../../data/invoices.json";
     INVOICES_LOCAL_STORAGE_KEY = "invoicesData";
+    METRICS_CONTAINER_SELECTOR = "section.metrics";
+    METRICS_CARDS_CONTAINER_SELECTOR = ".cards";
     TABLE_CONTAINER_SELECTOR = ".table-invoices";
     FILTER_SELECTOR = ".input-filter";
     FILTER_OPTIONS_SELECTOR = "#invoicesFilterOptions";
@@ -19,7 +22,7 @@ export class Invoices {
 
     utils = {};
     table = {};
-    input = {};
+    inputTable = {};
 
     filterBy = null;
     filterValue = null;
@@ -28,11 +31,11 @@ export class Invoices {
     /**
      * Initializes the Invoices class with the specified options.
      */
-    constructor({ invoices, utils, table, filter } = {}) {
+    constructor({ invoices, utils, table, filter, metrics } = {}) {
         this.invoices = invoices;
         this.utils = utils || new Utils();
         this.table = table || new Table({ containerSelector: this.TABLE_CONTAINER_SELECTOR, utils: this.utils });
-        const inputFilterParameters = {
+        const inputTableFilterParameters = {
             containerSelector: this.TABLE_CONTAINER_SELECTOR,
             filterSelector: this.FILTER_SELECTOR,
             filterOptionsSelector: this.FILTER_OPTIONS_SELECTOR,
@@ -41,7 +44,8 @@ export class Invoices {
             data: invoices,
             utils: this.utils
         };
-        this.input = filter || new Input(inputFilterParameters);
+        this.inputTable = filter || new Input(inputTableFilterParameters);
+        this.metrics = metrics || new Metrics({ containerSelector: this.METRICS_CONTAINER_SELECTOR, cardsContainerSelector: this.METRICS_CARDS_CONTAINER_SELECTOR })
     }
 
     /**
@@ -92,7 +96,6 @@ export class Invoices {
      */
     selectCallback({ option, value, input, select }) {
         const defaultValue = value ?? undefined
-        console.log({ option, value })
 
         input.disabled = false;
         input.value = "";
@@ -196,17 +199,81 @@ export class Invoices {
         return true;
     }
 
+    metricsCardsInfo({ invoices }) {
+
+        const injectValues = ({ object, value }) => {
+            object.value += value
+            object.quantity += 1
+        }
+
+
+        const totalIssuedInvoices = {
+            title: "Total Issued Invoices",
+            description: "Gain insight into the company's financial performance by tracking the total value of invoices issued.",
+            value: 0, quantity: 0
+        }
+        const issuedInvoicesWithoutCharges = {
+            title: "Issued Invoices without Charges",
+            description: "Evaluate billing efficiency by examining the total value of invoices issued without associated charges.",
+            value: 0, quantity: 0
+        }
+        const overdueInvoices = {
+            title: "Overdue Invoices - Delinquency",
+            description: "Identify and address financial risks by monitoring the total value of overdue invoices, reflecting delinquency status.",
+            value: 0, quantity: 0
+        }
+        const invoicesToBePaid = {
+            title: "Invoices to be Paid",
+            description: "Effectively plan and manage upcoming payments with insights into the total value of invoices awaiting settlement.",
+            value: 0, quantity: 0
+
+        }
+        const paidInvoices = {
+            title: "Paid Invoices",
+            description: "Celebrate financial achievements by tracking the total value of invoices that have been successfully paid.",
+            value: 0, quantity: 0
+        }
+
+
+
+        for (const { value, status, billingDate } of invoices) {
+            injectValues({ object: totalIssuedInvoices, value })
+
+            if (!billingDate) injectValues({ object: issuedInvoicesWithoutCharges, value })
+            if (status === "Charge made") injectValues({ object: invoicesToBePaid, value })
+            if (status === "Payment overdue") injectValues({ object: overdueInvoices, value })
+            if (status === "Payment made") injectValues({ object: paidInvoices, value })
+
+        }
+
+        const metricsCards = [totalIssuedInvoices, issuedInvoicesWithoutCharges, overdueInvoices, invoicesToBePaid, paidInvoices];
+
+        return metricsCards;
+    }
+
+
+    injectInvoiceList() {
+        this.inputTable.FILTER_DATA = this.invoices;
+        const statusOptions = ["Issued", "Charge made", "Payment overdue", "Payment made"];
+        const { filterOptions, input, select } = this.inputTable.initializeFilterInputs({ selectOptions: statusOptions });
+
+        this.filterInvoices({ statusOptions, filterOptions, input, select });
+        const hasQueryParams = this.handleQueryParams({ filterOptions, input, select });
+        if (!hasQueryParams) this.table.injectData({ dataList: this.invoices, cellCallback: this.tableCellCallback });
+    }
+
+    injectMetrics() {
+        const data = this.metricsCardsInfo({ invoices: this.invoices })
+        this.metrics.injectData({ data })
+
+    }
+
     /**
      * Fetches and injects all data from the mocked backend.
      */
     async injectData() {
         await this.fetchInvoices();
-        this.input.FILTER_DATA = this.invoices;
-        const statusOptions = ["Issued", "Charge made", "Payment overdue", "Payment made"];
-        const { filterOptions, input, select } = this.input.initializeFilterInputs({ selectOptions: statusOptions });
-
-        this.filterInvoices({ statusOptions, filterOptions, input, select });
-        const hasQueryParams = this.handleQueryParams({ filterOptions, input, select });
-        if (!hasQueryParams) this.table.injectData({ dataList: this.invoices, cellCallback: this.tableCellCallback, queryParams: { filterBy: this.filterBy, filterValue: this.filterValue } });
+        this.injectInvoiceList()
+        this.injectMetrics()
     }
 }
