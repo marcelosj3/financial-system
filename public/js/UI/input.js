@@ -30,7 +30,7 @@ export class Input {
     /**
      * Initializes filter inputs and options.
      */
-    initializeFilterInputs({ selectOptions }) {
+    initializeFilterInputs({ selectOptions } = {}) {
         const filter = document.querySelector(`${this.CONTAINER_SELECTOR} ${this.INPUT_FILTER_SELECTOR}`);
         const filterOptions = filter.querySelector(this.INPUT_FILTER_OPTIONS_SELECTOR);
         const input = filter.querySelector(this.INPUT_FILTER_INPUT_SELECTOR);
