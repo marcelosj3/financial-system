@@ -20,6 +20,13 @@
   --table-empty-state-paragraph-fs: 18;
   --metrics-card-bg-opacity: 0.7;
   --metrics-card-max-width: 600px;
+  --metric-cards-hover-transform: scale(1.01);
+  --input-filter-max-width: 500px;
+  --input-filter-options-max-width: 170px;
+  --input-datepicker-trimester-p-border: 1px solid transparent;
+  --input-datepicker-trimester-p-padding: 7px 0 7px 11px;
+  --input-datepicker-trimester-p-line-height: 22px;
+  --input-datepicker-trimester-p-width: fit-content;
 }
 
 /* Not found page */
@@ -151,6 +158,23 @@ section.cards {
   .card:hover {
     transition: var(--transition);
     box-shadow: var(--bs-box-shadow-lg);
-    transform: scale(1.01);
+    transform: var(--metric-cards-hover-transform);
   }
+}
+
+/* Input filters */
+div.input-filter select.filter-options {
+  max-width: var(--input-filter-options-max-width);
+}
+
+div.input-filter {
+  max-width: var(--input-filter-max-width);
+}
+
+/* Datepicker */
+p.datepicker-trimester {
+  border: var(--input-datepicker-trimester-p-border);
+  padding: var(--input-datepicker-trimester-p-padding);
+  line-height: var(--input-datepicker-trimester-p-line-height);
+  width: var(--input-datepicker-trimester-p-width);
 }

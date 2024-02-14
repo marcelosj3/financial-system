@@ -88,8 +88,6 @@ export class Utils {
 
     /**
      * Fetches data from local storage.
-     * @param {string} localStorageKey - The key for local storage.
-     * @returns {Object|null} - The fetched data or null if not available.
      */
     fetchDataFromLocalStorage(localStorageKey) {
         const storedData = localStorage.getItem(localStorageKey);

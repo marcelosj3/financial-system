@@ -167,8 +167,8 @@ export class InvoicesTable {
      */
     handleQueryParams({ filterOptions, input, select }) {
         const queryParams = this.utils.fetchQueryParams();
-        const filterBy = queryParams.get("filter_by");
-        const filterValue = queryParams.get("filter_value");
+        const filterBy = queryParams.get(this.QUERY_PARAMS_FILTER_BY_KEY);
+        const filterValue = queryParams.get(this.QUERY_PARAMS_FILTER_VALUE_KEY);
 
         if (!filterBy || !filterValue) return false;
 

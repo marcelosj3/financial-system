@@ -69,16 +69,22 @@
             <section class="metrics">
                 <header class="d-flex justify-content-between mb-4">
                     <h3 class="text-nowrap">Metrics</h3>
-                    <div class="col-4">
-                        <div class="input-filter input-group">
-                            <label class="input-group-text">Filter metrics by</label>
-                            <select class="form-select" id="invoicesMetricsFilterOptions">
-                                <option selected>Choose...</option>
-                                <option value="year">Year</option>
-                                <option value="trimester">Trimester</option>
-                                <option value="month">Month</option>
-                            </select>
-                            <input type="text" class="form-control" value="Select a filter option!" disabled>
+                    <div class="input-filter input-group">
+                        <label class="input-group-text">Filter metrics by</label>
+                        <select class="form-select filter-options" id="invoicesMetricsFilterOptions">
+                            <option selected>Choose...</option>
+                            <option value="year">Year</option>
+                            <option value="trimester">Trimester</option>
+                            <option value="month">Month</option>
+                        </select>
+                        <div class="filter-container form-control position-relative p-0">
+                            <input type="text" class="form-control rounded-0 h-100" value="Select a filter option!"
+                                disabled>
+                            <select class="select-values form-select rounded-0 h-100 d-none"
+                                id="metricsYearOptions"></select>
+                            <p
+                                class="datepicker-trimester form-control rounded-0 border-end-0 d-none position-absolute m-0 bg-white top-0 h-100 text-nowrap">
+                                Date</p>
                         </div>
                     </div>
                 </header>
@@ -97,19 +103,17 @@
             <section class="table-invoices">
                 <header class="d-flex justify-content-between">
                     <h3 class="text-nowrap">Invoices</h3>
-                    <div class="col-4">
-                        <div class="input-filter input-group">
-                            <label class="input-group-text">Filter table by</label>
-                            <select class="form-select" id="invoicesTableFilterOptions">
-                                <option selected>Choose...</option>
-                                <option value="issueMonth">Issue Month</option>
-                                <option value="billingMonth">Billing Month</option>
-                                <option value="paymentMonth">Payment Month</option>
-                                <option value="status">Status</option>
-                            </select>
-                            <input type="text" class="form-control" value="Select a filter option!" disabled>
-                            <select class="form-select d-none" id="invoicesTableStatusOptions"></select>
-                        </div>
+                    <div class="input-filter input-group">
+                        <label class="input-group-text">Filter table by</label>
+                        <select class="form-select filter-options" id="invoicesTableFilterOptions">
+                            <option selected>Choose...</option>
+                            <option value="issueMonth">Issue Month</option>
+                            <option value="billingMonth">Billing Month</option>
+                            <option value="paymentMonth">Payment Month</option>
+                            <option value="status">Status</option>
+                        </select>
+                        <input type="text" class="form-control" value="Select a filter option!" disabled>
+                        <select class="select-values form-select d-none" id="invoicesTableStatusOptions"></select>
                     </div>
                 </header>
                 <div class="table-responsive">
