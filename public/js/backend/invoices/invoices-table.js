@@ -28,7 +28,7 @@ export class InvoicesTable {
     /**
      * Initializes the Invoices class with the specified options.
      */
-    constructor({ invoices, utils, table, filter, metrics } = {}) {
+    constructor({ invoices, utils, table, input } = {}) {
         this.invoices = invoices;
         this.utils = utils || new Utils();
         this.table = table || new Table({ containerSelector: this.TABLE_CONTAINER_SELECTOR, utils: this.utils });
@@ -41,7 +41,7 @@ export class InvoicesTable {
             data: invoices,
             utils: this.utils
         };
-        this.input = filter || new Input(inputFilterParameters);
+        this.input = input || new Input(inputFilterParameters);
     }
 
 
