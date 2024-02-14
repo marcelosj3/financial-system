@@ -78,9 +78,9 @@
                             <option value="month">Month</option>
                         </select>
                         <div class="filter-container form-control position-relative p-0">
-                            <input type="text" class="form-control rounded-0 h-100" value="Select a filter option!"
-                                disabled>
-                            <select class="select-values form-select rounded-0 h-100 d-none"
+                            <input type="text" class="form-control rounded-0 h-100 w-100"
+                                value="Select a filter option!" disabled>
+                            <select class="select-values form-select rounded-0 h-100 w-100 d-none"
                                 id="metricsYearOptions"></select>
                             <p
                                 class="datepicker-trimester form-control rounded-0 border-end-0 d-none position-absolute m-0 bg-white top-0 h-100 text-nowrap">
@@ -88,6 +88,11 @@
                         </div>
                     </div>
                 </header>
+
+                <!-- Chart -->
+                <section class="mx-0 my-4">
+                    <canvas id="metrics-chart"></canvas>
+                </section>
 
                 <!-- Cards -->
                 <section class="cards m-0 d-flex flex-wrap flex-xxxl-nowrap justify-content-center gap-2"></section>
@@ -141,6 +146,7 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module" src="js/main.js"></script>
 </body>
 

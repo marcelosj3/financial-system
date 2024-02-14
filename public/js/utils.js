@@ -52,11 +52,12 @@ export class Utils {
     /**
      * Formats the given date string into a localized date string.
      */
-    formatDate({ date, options } = {}) {
+    formatDate({ date, options, locale } = {}) {
         const dateValue = date ?? new Date();
         const optionsValue = options ?? {};
+        const localeValue = locale ?? this.locale
 
-        return dateValue.toLocaleDateString(this.locale, optionsValue);
+        return dateValue.toLocaleDateString(localeValue, optionsValue);
     }
 
     /**

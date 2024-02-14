@@ -9,6 +9,7 @@ import { Utils } from "../../utils.js";
 export class InvoicesMetrics {
     METRICS_CONTAINER_SELECTOR = "section.metrics";
     METRICS_CARDS_CONTAINER_SELECTOR = ".cards";
+    METRICS_CHART_SELECTOR = "#metrics-chart"
     FILTER_SELECTOR = ".input-filter";
     FILTER_OPTIONS_SELECTOR = "#invoicesMetricsFilterOptions";
     FILTER_INPUT_SELECTOR = "input";
@@ -31,7 +32,11 @@ export class InvoicesMetrics {
     constructor({ invoices, utils, metrics, input } = {}) {
         this.invoices = invoices;
         this.utils = utils || new Utils();
-        this.metrics = metrics || new Metrics({ containerSelector: this.METRICS_CONTAINER_SELECTOR, cardsContainerSelector: this.METRICS_CARDS_CONTAINER_SELECTOR });
+        this.metrics = metrics || new Metrics({
+            containerSelector: this.METRICS_CONTAINER_SELECTOR,
+            cardsContainerSelector: this.METRICS_CARDS_CONTAINER_SELECTOR,
+            chartSelector: this.METRICS_CHART_SELECTOR
+        });
         const inputFilterParameters = {
             containerSelector: this.METRICS_CONTAINER_SELECTOR,
             filterSelector: this.FILTER_SELECTOR,
@@ -81,6 +86,7 @@ export class InvoicesMetrics {
 
         for (const { value, status, billingDate } of invoices) {
             injectValues({ object: totalIssuedInvoices, value });
+
             if (!billingDate) injectValues({ object: issuedInvoicesWithoutCharges, value });
             if (status === "Charge made") injectValues({ object: invoicesToBePaid, value });
             if (status === "Payment overdue") injectValues({ object: overdueInvoices, value });
@@ -93,7 +99,7 @@ export class InvoicesMetrics {
 
     /**
      * Callback function for handling filter selection changes.
-     */
+    */
     selectCallback({ option, input, select, paragraph, value }) {
         const utils = this.utils;
         const formatMonth = (dateValue) => utils.formatDate({ date: dateValue, options: { year: "numeric", month: "numeric" } }).split("/").reverse().join("-");
@@ -122,8 +128,8 @@ export class InvoicesMetrics {
                 const month = formatMonth(date);
                 input.value = month;
                 const nextThreeMonthsDate = new Date(new Date(date).setMonth(date.getMonth() + 3));
-                const nextThreeMonthsValue = formatMonth(nextThreeMonthsDate);
-                paragraph.textContent = `${month} to ${nextThreeMonthsValue}`;
+                const nextThreeMonthsValue = utils.formatDate({ date: nextThreeMonthsDate, locale: 'en-US', options: { month: 'short', year: 'numeric' } });
+                paragraph.textContent = `${utils.formatDate({ date, locale: 'en-US', options: { month: 'short', year: 'numeric' } })} to ${nextThreeMonthsValue}`;
                 input.style.width = `${paragraph.clientWidth + 40}px`;
                 return { filterBy, filterValue: date };
             },
@@ -185,8 +191,8 @@ export class InvoicesMetrics {
             const month = formatMonth(inputValue);
             input.value = month;
             const nextThreeMonthsDate = new Date(new Date(inputValue).setMonth(inputValue.getMonth() + 3));
-            const nextThreeMonthsValue = formatMonth(nextThreeMonthsDate);
-            paragraph.textContent = `${month} to ${nextThreeMonthsValue}`;
+            const nextThreeMonthsValue = utils.formatDate({ date: nextThreeMonthsDate, locale: 'en-US', options: { month: 'short', year: 'numeric' } });
+            paragraph.textContent = `${utils.formatDate({ date: inputValue, locale: 'en-US', options: { month: 'short', year: 'numeric' } })} to ${nextThreeMonthsValue}`;
             input.style.width = `${paragraph.clientWidth + 40}px`;
         }
 
@@ -248,6 +254,7 @@ export class InvoicesMetrics {
 
                 // Calculate the last day of the trimester
                 const lastDayOfLastMonth = new Date(value);
+                // We use +4 in the month cause when we set the date to 0, it fetches the previous month
                 lastDayOfLastMonth.setMonth(lastDayOfLastMonth.getMonth() + 4);
                 lastDayOfLastMonth.setDate(0);
                 lastDayOfLastMonth.setHours(23, 59, 59, 59);
@@ -311,16 +318,137 @@ export class InvoicesMetrics {
     * Filter data and inject it into the HTML elements.
     */
     filterAndInjectData({ filterBy, filterValue }) {
+
         const data = this.filterCallback({ filterBy, filterValue });
+        this.utils.setQueryParams(this.QUERY_PARAMS_FILTER_BY_KEY, filterBy)
+        this.utils.setQueryParams(this.QUERY_PARAMS_FILTER_VALUE_KEY, this.utils.formatDate({ date: filterValue, options: { year: "numeric", month: "numeric" } }).split("/").reverse().join("-"))
         this.injectData({ data: data || this.invoices });
+    }
+
+    /**
+     * Generates chart data based on the provided invoices, filter criteria, and date range.
+     */
+    metricsChartInfo({ invoices }) {
+        const filterBy = this.filterBy
+        const filterValue = this.filterValue
+        const utils = this.utils
+
+        const filters = {
+            "year": () => {
+                const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+                const delinquencyDataset = { label: "Delinquency amount", data: [] }
+                const paidDataset = { label: "Paid Invoices", data: [] }
+
+                invoices.forEach(({ status, paymentDate, value }) => {
+                    const date = new Date(paymentDate)
+                    const year = date.getFullYear()
+                    const month = date.getMonth()
+
+                    if (year !== filterValue.getFullYear()) return
+
+                    if (status == "Payment overdue") {
+                        if (!delinquencyDataset["data"][month]) delinquencyDataset["data"][month] = value
+                        else delinquencyDataset["data"][month] += value
+                    }
+
+                    if (status == "Payment made") {
+                        if (!paidDataset["data"][month]) paidDataset["data"][month] = value
+                        else paidDataset["data"][month] += value
+                    }
+
+                })
+
+                const datasets = [paidDataset, delinquencyDataset]
+                return { labels, datasets }
+            },
+            "trimester": () => {
+                const firstDayOfFirstMonth = new Date(filterValue);
+                firstDayOfFirstMonth.setDate(1);
+                firstDayOfFirstMonth.setHours(6, 0, 0, 0);
+
+                // Calculate the last day of the trimester
+                const lastDayOfLastMonth = new Date(filterValue);
+                lastDayOfLastMonth.setMonth(lastDayOfLastMonth.getMonth() + 4);
+                lastDayOfLastMonth.setDate(0);
+                lastDayOfLastMonth.setHours(23, 59, 59, 59);
+
+                const labels = []
+                const currentDate = new Date(firstDayOfFirstMonth)
+                while (currentDate <= lastDayOfLastMonth) {
+                    labels.push(`${utils.formatDate({ date: currentDate, locale: 'en-US', options: { month: 'short', day: '2-digit' } })}`)
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
+
+                const delinquencyDataset = { label: "Delinquency amount", data: [] }
+                const paidDataset = { label: "Paid Invoices", data: [] }
+
+                invoices.forEach(({ status, paymentDate, value }) => {
+                    const dateValue = new Date(paymentDate)
+                    const date = utils.formatDate({ date: dateValue, locale: 'en-US', options: { month: 'short', day: '2-digit' } })
+                    const indexOfDate = labels.indexOf(date)
+
+                    if (indexOfDate === -1) return
+
+                    if (status == "Payment overdue") {
+                        if (!delinquencyDataset["data"][indexOfDate]) delinquencyDataset["data"][indexOfDate] = value
+                        else delinquencyDataset["data"][indexOfDate] += value
+                    }
+
+                    if (status == "Payment made") {
+                        if (!paidDataset["data"][indexOfDate]) paidDataset["data"][indexOfDate] = value
+                        else paidDataset["data"][indexOfDate] += value
+                    }
+
+                })
+
+                const datasets = [paidDataset, delinquencyDataset]
+                return { labels, datasets }
+            },
+            "month": () => {
+                const daysInMonth = new Date(filterValue.getFullYear(), filterValue.getMonth() + 1, 0).getDate()
+                const labels = Array.from(Array(daysInMonth).keys()).map(val => val + 1)
+                const delinquencyDataset = { label: "Delinquency amount", data: [] }
+                const paidDataset = { label: "Paid Invoices", data: [] }
+
+                invoices.forEach(({ status, paymentDate, value }) => {
+                    const date = new Date(paymentDate)
+                    const year = date.getFullYear()
+                    const day = date.getDate()
+
+                    if (year !== filterValue.getFullYear()) return
+
+                    if (status == "Payment overdue") {
+                        if (!delinquencyDataset["data"][day]) delinquencyDataset["data"][day] = value
+                        else delinquencyDataset["data"][day] += value
+                    }
+
+                    if (status == "Payment made") {
+                        if (!paidDataset["data"][day]) paidDataset["data"][day] = value
+                        else paidDataset["data"][day] += value
+                    }
+
+                })
+
+                const datasets = [paidDataset, delinquencyDataset]
+                return { labels, datasets }
+            }
+        }
+
+        // Return null if filterBy is not provided
+        if (!filterBy) return [];
+
+        // Apply the selected filter and return the filtered data
+        const data = filters[filterBy]();
+        return data;
     }
 
     /**
      * Injects data into the Metrics class.
      */
     injectData({ data }) {
-        const metricsData = this.metricsCardsInfo({ invoices: data });
-        this.metrics.injectData({ data: metricsData });
+        const cardsData = this.metricsCardsInfo({ invoices: data });
+        const chartData = this.metricsChartInfo({ invoices: data })
+        this.metrics.injectData({ cardsData, chartData });
     }
 
     /**

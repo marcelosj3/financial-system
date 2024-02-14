@@ -1,26 +1,28 @@
 import { Utils } from "../utils.js";
 
-/**
- * Input class for handling filter inputs.
- */
 export class Metrics {
     CONTAINER_SELECTOR = "";
     CARDS_CONTAINER_SELECTOR = "";
-    METRICS_DATA = []
+    CHART_SELECTOR = ""
+    DATA = []
 
     utils = {};
 
     /**
      * Initializes the Input class with the specified options.
      */
-    constructor({ containerSelector, cardsContainerSelector, data, utils }) {
+    constructor({ containerSelector, cardsContainerSelector, chartSelector, data, utils }) {
         this.CONTAINER_SELECTOR = containerSelector;
         this.CARDS_CONTAINER_SELECTOR = cardsContainerSelector;
-        this.METRICS_DATA = data;
+        this.CHART_SELECTOR = chartSelector;
+        this.DATA = data;
 
         this.utils = utils || new Utils();
     }
 
+    /**
+     * Generates an HTML card and implements data via dependency injection.
+     */
     generateCard({ title, description, value, quantity }) {
         const container = document.createElement("section")
         const header = document.createElement("header")
@@ -60,6 +62,9 @@ export class Metrics {
         return container
     }
 
+    /**
+     * Injects cards into the DOM using the provided data.
+     */
     injectCards({ container, data }) {
         const cardsContainer = container.querySelector(this.CARDS_CONTAINER_SELECTOR)
         cardsContainer.innerHTML = ""
@@ -72,8 +77,42 @@ export class Metrics {
         })
     }
 
-    injectData({ data }) {
+    /**
+     * Injects data into the chart using the provided information.
+     */
+    injectChartData({ data }) {
+        const ctx = document.querySelector(this.CHART_SELECTOR);
+
+        const existingChart = Chart.getChart(ctx);
+        if (existingChart) {
+            existingChart.destroy();
+        }
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data?.labels || [],
+                datasets: data?.datasets || []
+            },
+            options: {
+                showTooltips: true,
+                responsive: true,
+                spanGaps: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+    * Injects data into both cards and chart using the provided information.
+    */
+    injectData({ cardsData, chartData }) {
         const container = document.querySelector(this.CONTAINER_SELECTOR)
-        this.injectCards({ container, data })
+        this.injectCards({ container, data: cardsData })
+        this.injectChartData({ data: chartData })
     }
 }
