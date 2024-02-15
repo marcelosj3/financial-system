@@ -126,6 +126,8 @@ export class Metrics {
             existingChart.destroy();
         }
 
+        ctx.setAttribute("height", 750)
+
         new Chart(ctx, {
             type: 'line',
             data: {
@@ -135,6 +137,7 @@ export class Metrics {
             options: {
                 showTooltips: true,
                 responsive: true,
+                maintainAspectRatio: false,
                 spanGaps: true,
                 scales: {
                     y: {
