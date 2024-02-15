@@ -19,8 +19,8 @@ Conditions:
 
 - If the status is "Issued," there is no `billingDate` or `paymentDate`, and no `invoiceDocument` or `paymentDocument`.
 - If the status is "Charge made," the `paymentDate` is exactly 7 days after the `billingDate`, and no `invoiceDocument` or `paymentDocument`.
-- If the status is "Payment overdue," the `paymentDate` is a date in the past (before February 13, GMT -3), and it has an `invoiceDocument` but not a `paymentDocument`.
-- If the status is "Payment made," the `paymentDate` is a date in the past (before February 13, GMT -3), and the payment date is between `billingDate + 7 days`.
+- If the status is "Payment overdue," the `paymentDate` is a date in the past (before February 16, GMT -3), and it has an `invoiceDocument` but not a `paymentDocument`.
+- If the status is "Payment made," the `paymentDate` is a date in the past (before February 16, GMT -3), and the payment date is between `billingDate + 7 days`.
 
 ## Technologies Utilized
 
