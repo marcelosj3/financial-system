@@ -1,0 +1,14 @@
+/* Bootstrap variables */
+:root {
+  --bs-primary-rgb: 243, 49, 111;
+}
+
+/* Form control */
+.form-control:focus {
+  box-shadow: none;
+}
+
+/* Font size */
+.fs-7 {
+  font-size: 0.75rem;
+}

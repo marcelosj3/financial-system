@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechNation - Financial System</title>
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-override.css">
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <div class="offcanvas offcanvas-start bg-primary text-white show border-0" data-bs-scroll="true"
+        data-bs-backdrop="false" tabindex="-1" id="sidebar" aria-labelledby="sidebarLabel">
+        <header class="offcanvas-header d-flex justify-content-start gap-2">
+            <img src="./assets/icons/accusoft.svg" alt="Accusoft logo">
+            <h3 class="offcanvas-title" id="sidebarLabel">Accusoft</h3>
+        </header>
+
+        <body>
+            <ul></ul>
+        </body>
+    </div>
+
+    <section>
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg bg-body-tertiary shadow m-0">
+            <div class="container-fluid">
+                <div class="collapse navbar-collapse justify-content-between">
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar"
+                            aria-controls="sidebar">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <span class="fw-bold">
+                            Dashboard
+                        </span>
+                    </div>
+                    <form class="d-flex" role="search">
+                        <div class="input-group flex-nowrap">
+                            <span class="input-group-text rounded-start-pill" id="addon-wrapping">
+                                <img src="./assets/icons/search.svg" alt="Accusoft logo">
+                            </span>
+                            <input type="text" class="form-control rounded-end-pill" type="search"
+                                placeholder="Search here" aria-label="Search" aria-describedby="addon-wrapping">
+                        </div>
+                    </form>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="d-flex flex-stretch">
+                            <img src="" alt="..." class="profile-image rounded-circle">
+                        </div>
+                        <div class="d-flex flex-column">
+                            <p class="profile-name m-0 fw-bold fs-6">Name</p>
+                            <p class="profile-role m-0 fs-7">Role</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="p-4">
+
+            <!-- Metrics -->
+            <section class="metrics">
+                <header class="d-flex justify-content-between mb-4">
+                    <h3 class="text-nowrap">Metrics</h3>
+                    <div class="input-filter input-group">
+                        <label class="input-group-text">Filter metrics by</label>
+                        <select class="form-select filter-options" id="invoicesMetricsFilterOptions">
+                            <option selected>Choose...</option>
+                            <option value="year">Year</option>
+                            <option value="trimester">Trimester</option>
+                            <option value="month">Month</option>
+                        </select>
+                        <div class="filter-container form-control position-relative p-0">
+                            <input type="text" class="form-control rounded-0 h-100 w-100"
+                                value="Select a filter option!" disabled>
+                            <select class="select-values form-select rounded-0 h-100 w-100 d-none"
+                                id="metricsYearOptions"></select>
+                            <p
+                                class="datepicker-trimester form-control rounded-0 border-end-0 d-none position-absolute m-0 bg-white top-0 h-100 text-nowrap">
+                                Date</p>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Chart -->
+                <section class="metrics-chart-container mx-0 my-4 position-relative">
+                    <canvas id="metrics-chart"></canvas>
+                    <div class="metrics-chart-state-manager"></div>
+                </section>
+
+                <!-- Cards -->
+                <section class="cards m-0 d-flex flex-wrap flex-xxxl-nowrap justify-content-center gap-2"></section>
+
+            </section>
+
+
+            <section class="my-4">
+                <hr />
+            </section>
+
+            <!-- Invoices table -->
+            <section class="table-invoices">
+                <header class="d-flex justify-content-between">
+                    <h3 class="text-nowrap">Invoices</h3>
+                    <div class="input-filter input-group">
+                        <label class="input-group-text">Filter table by</label>
+                        <select class="form-select filter-options" id="invoicesTableFilterOptions">
+                            <option selected>Choose...</option>
+                            <option value="issueMonth">Issue Month</option>
+                            <option value="billingMonth">Billing Month</option>
+                            <option value="paymentMonth">Payment Month</option>
+                            <option value="status">Status</option>
+                        </select>
+                        <input type="text" class="form-control" value="Select a filter option!" disabled>
+                        <select class="select-values form-select d-none" id="invoicesTableStatusOptions"></select>
+                    </div>
+                </header>
+                <div class="table-responsive">
+                    <table class="table align-middle table-striped">
+                        <thead>
+                            <tr>
+                                <th class="fw-bold text-nowrap">Payer's Name</th>
+                                <th class="fw-bold text-nowrap">Identification Number</th>
+                                <th class="fw-bold text-nowrap">Issue Date</th>
+                                <th class="fw-bold text-nowrap">Billing Date</th>
+                                <th class="fw-bold text-nowrap">Payment Date</th>
+                                <th class="fw-bold text-nowrap">Value</th>
+                                <th class="fw-bold text-nowrap">Invoice Document</th>
+                                <th class="fw-bold text-nowrap">Payment Document</th>
+                                <th class="fw-bold text-nowrap">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+    </section>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="js/main.js"></script>
+</body>
+
+</html>

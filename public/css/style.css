@@ -1,0 +1,180 @@
+/* Variables */
+:root {
+  --transition: 300ms;
+  --logo-width: 40px;
+  --section-ml: 60px;
+  --sidebar-width: 400px;
+  --sidebar-hidden-left-pos: calc(var(--sidebar-width) - var(--section-ml));
+  --sidebar-img-size: 28px;
+  --sidebar-ul-gap: 8px;
+  --sidebar-li-gap: 16px;
+  --sidebar-li-fs: 18px;
+  --sidebar-li-padding: 18px;
+  --sidebar-li-active-border-radius: 24px;
+  --sidebar-li-active-bg: var(--bs-white);
+  --navbar-height: 60px;
+  --navbar-profile-image-mw: 40px;
+  --not-found-heading-fs: 160px;
+  --table-empty-state-section-height: 600px;
+  --table-empty-state-heading-fs: 40px;
+  --table-empty-state-paragraph-fs: 18;
+  --metrics-card-bg-opacity: 0.7;
+  --metrics-card-max-width: 600px;
+  --metric-cards-hover-transform: scale(1.01);
+  --input-filter-max-width: 525px;
+  --input-filter-options-max-width: 170px;
+  --input-datepicker-trimester-p-border: 1px solid transparent;
+  --input-datepicker-trimester-p-padding: 7px 0 7px 11px;
+  --input-datepicker-trimester-p-line-height: 22px;
+  --input-datepicker-trimester-p-width: fit-content;
+}
+
+/* Not found page */
+.not-found {
+  h3 {
+    font-size: var(--not-found-heading-fs);
+  }
+}
+
+/* Sidebar */
+#sidebar {
+  visibility: visible;
+  transform: translateX(calc(-1 * var(--sidebar-hidden-left-pos)));
+
+  header {
+    height: (var(--navbar-height));
+
+    img {
+      width: var(--logo-width);
+    }
+  }
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sidebar-ul-gap);
+
+    a {
+      text-decoration: none;
+      color: rgba(var(--bs-white));
+
+      li {
+        display: flex;
+        align-items: center;
+        justify-content: start;
+        gap: var(--sidebar-li-gap);
+        font-size: var(--sidebar-li-fs);
+        padding: var(--sidebar-li-padding);
+
+        svg {
+          width: var(--sidebar-img-size);
+          height: var(--sidebar-img-size);
+        }
+      }
+    }
+
+    li.active {
+      background-color: var(--sidebar-li-active-bg);
+      border-top-left-radius: var(--sidebar-li-active-border-radius);
+      border-bottom-left-radius: var(--sidebar-li-active-border-radius);
+
+      color: rgba(var(--bs-primary-rgb), var(--bs-bg-opacity)) !important;
+      fill: rgba(var(--bs-primary-rgb), var(--bs-bg-opacity)) !important;
+    }
+  }
+}
+
+#sidebar.show {
+  transform: none;
+}
+
+#sidebar.show + section {
+  margin-left: var(--sidebar-width);
+}
+
+#sidebar:not(.show) ul li {
+  justify-content: end;
+  transition: var(--transition);
+
+  div {
+    order: 1;
+    transition: var(--transition);
+  }
+
+  span {
+    opacity: 0;
+  }
+}
+
+/* section */
+section {
+  transition: var(--transition);
+  margin-left: var(--section-ml);
+}
+
+/* Navbar */
+nav.navbar {
+  height: var(--navbar-height);
+}
+
+nav.navbar .profile-image {
+  max-width: var(--navbar-profile-image-mw);
+}
+
+/* Table */
+table td.empty-state {
+  section {
+    height: var(--table-empty-state-section-height);
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    h6 {
+      font-size: var(--table-empty-state-heading-fs);
+    }
+
+    p {
+      font-size: var(--table-empty-state-paragraph-fs);
+    }
+  }
+}
+
+/* Metrics */
+
+section.cards {
+  .card {
+    transition: var(--transition);
+
+    background-color: rgba(
+      var(--bs-primary-rgb),
+      var(--metrics-card-bg-opacity)
+    );
+
+    max-width: var(--metrics-card-max-width);
+  }
+
+  .card:hover {
+    transition: var(--transition);
+    box-shadow: var(--bs-box-shadow-lg);
+    transform: var(--metric-cards-hover-transform);
+  }
+}
+
+/* Input filters */
+div.input-filter select.filter-options {
+  max-width: var(--input-filter-options-max-width);
+}
+
+div.input-filter {
+  max-width: var(--input-filter-max-width);
+}
+
+/* Datepicker */
+p.datepicker-trimester {
+  border: var(--input-datepicker-trimester-p-border);
+  padding: var(--input-datepicker-trimester-p-padding);
+  line-height: var(--input-datepicker-trimester-p-line-height);
+  width: var(--input-datepicker-trimester-p-width);
+}
