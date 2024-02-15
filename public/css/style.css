@@ -31,7 +31,7 @@
 
 /* Not found page */
 .not-found {
-  h1 {
+  h3 {
     font-size: var(--not-found-heading-fs);
   }
 }

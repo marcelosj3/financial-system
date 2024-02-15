@@ -3,7 +3,9 @@ import { Utils } from "../utils.js";
 export class Metrics {
     CONTAINER_SELECTOR = "";
     CARDS_CONTAINER_SELECTOR = "";
+    CHART_CONTAINER_SELECTOR = ""
     CHART_SELECTOR = ""
+    CHART_STATE_MANAGER_SELECTOR = ""
     DATA = []
 
     utils = {};
@@ -11,10 +13,12 @@ export class Metrics {
     /**
      * Initializes the Input class with the specified options.
      */
-    constructor({ containerSelector, cardsContainerSelector, chartSelector, data, utils }) {
+    constructor({ containerSelector, cardsContainerSelector, chartContainerSelector, chartSelector, chartStateManagerSelector, data, utils }) {
         this.CONTAINER_SELECTOR = containerSelector;
         this.CARDS_CONTAINER_SELECTOR = cardsContainerSelector;
+        this.CHART_CONTAINER_SELECTOR = chartContainerSelector;
         this.CHART_SELECTOR = chartSelector;
+        this.CHART_STATE_MANAGER_SELECTOR = chartStateManagerSelector
         this.DATA = data;
 
         this.utils = utils || new Utils();
@@ -77,11 +81,45 @@ export class Metrics {
         })
     }
 
+
+    isEmptyChart({ data } = {}) {
+        return !data?.datasets.map(dataset => dataset?.data?.length).reduce((acc, val) => acc += val)
+    }
+
+    injectEmptyChartState({ stateManager } = {}) {
+        const section = document.createElement("section")
+        const heading = document.createElement("h6")
+        const paragraph = document.createElement("p")
+
+        heading.textContent = "No results found for these filters! "
+        paragraph.textContent = "Let's try something else."
+
+        const stateManagerClasses = ["position-absolute", "top-0", "left-0", "bottom-0", "right-0", "bg-danger", "h-100", "w-100"]
+        const sectionClasses = ["not-found", "d-flex", "flex-column", "flex-fill", "align-items-center", "justify-content-center", "h-100"]
+        const headingClasses = ["m-0"]
+
+        container.classList.add("position-relative")
+        stateManagerClasses.forEach(klass => stateManager.classList.add(klass))
+        sectionClasses.forEach(klass => section.classList.add(klass))
+        headingClasses.forEach(klass => heading.classList.add(klass))
+
+        stateManager.setAttribute("style", "--bs-bg-opacity: .5;")
+
+        section.appendChild(heading)
+        section.appendChild(paragraph)
+        stateManager.appendChild(section)
+    }
+
     /**
      * Injects data into the chart using the provided information.
      */
     injectChartData({ data }) {
-        const ctx = document.querySelector(this.CHART_SELECTOR);
+        const container = document.querySelector(this.CHART_CONTAINER_SELECTOR);
+        const stateManager = container.querySelector(this.CHART_STATE_MANAGER_SELECTOR)
+        const ctx = container.querySelector(this.CHART_SELECTOR);
+
+        stateManager.innerHTML = ""
+        stateManager.classList = "metrics-chart-state-manager"
 
         const existingChart = Chart.getChart(ctx);
         if (existingChart) {
@@ -105,6 +143,8 @@ export class Metrics {
                 }
             }
         });
+
+        if (this.isEmptyChart({ data })) this.injectEmptyChartState({ stateManager })
     }
 
     /**

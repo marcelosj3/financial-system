@@ -9,7 +9,9 @@ import { Utils } from "../../utils.js";
 export class InvoicesMetrics {
     METRICS_CONTAINER_SELECTOR = "section.metrics";
     METRICS_CARDS_CONTAINER_SELECTOR = ".cards";
+    METRICS_CHART_CONTAINER_SELECTOR = ".metrics-chart-container"
     METRICS_CHART_SELECTOR = "#metrics-chart"
+    METRICS_CHART_STATE_MANAGER_SELECTOR = ".metrics-chart-state-manager"
     FILTER_SELECTOR = ".input-filter";
     FILTER_OPTIONS_SELECTOR = "#invoicesMetricsFilterOptions";
     FILTER_INPUT_SELECTOR = "input";
@@ -35,7 +37,9 @@ export class InvoicesMetrics {
         this.metrics = metrics || new Metrics({
             containerSelector: this.METRICS_CONTAINER_SELECTOR,
             cardsContainerSelector: this.METRICS_CARDS_CONTAINER_SELECTOR,
-            chartSelector: this.METRICS_CHART_SELECTOR
+            chartContainerSelector: this.METRICS_CHART_CONTAINER_SELECTOR,
+            chartSelector: this.METRICS_CHART_SELECTOR,
+            chartStateManagerSelector: this.METRICS_CHART_STATE_MANAGER_SELECTOR,
         });
         const inputFilterParameters = {
             containerSelector: this.METRICS_CONTAINER_SELECTOR,
