@@ -32,6 +32,14 @@ The Financial System leverages the following technologies:
 - **HTML**
 - **Express 4.17.1** (Primarily used for project execution)
 
+## Responsiveness Note
+
+Please note that for this project, the primary focus has been on providing a seamless experience for desktop users. The web application's design and functionalities have been optimized for larger screens to ensure a comprehensive view of the financial data.
+
+While I typically prioritize responsiveness and create smooth transitions for various device sizes, for this specific project, the emphasis has been on desktop views and delivering robust functionalities.
+
+Aspects related to mobile and tablet views are considered more of a designer's concern in this context.
+
 ## Running the Server Locally
 
 Follow these steps to run the server and access the Financial System web page locally:
