@@ -35,7 +35,9 @@ export class Invoices {
     async fetchInvoices() {
         try {
             const dataParameters = { localStorageKey: this.INVOICES_LOCAL_STORAGE_KEY, path: this.INVOICES_JSON_PATH };
-            this.invoices = await this.utils.fetchData(dataParameters);
+            const invoices = await this.utils.fetchData(dataParameters);
+            const sortedInvoices = invoices.sort((invoiceA, invoiceB) => Number(new Date(invoiceA.issueDate)) - Number(new Date(invoiceB.issueDate)));
+            this.invoices = sortedInvoices
         } catch (error) {
             console.error("Error fetching invoices data:", error);
         }

@@ -318,7 +318,6 @@ export class InvoicesMetrics {
     * Filter data and inject it into the HTML elements.
     */
     filterAndInjectData({ filterBy, filterValue }) {
-
         const data = this.filterCallback({ filterBy, filterValue });
         this.utils.setQueryParams(this.QUERY_PARAMS_FILTER_BY_KEY, filterBy)
         this.utils.setQueryParams(this.QUERY_PARAMS_FILTER_VALUE_KEY, this.utils.formatDate({ date: filterValue, options: { year: "numeric", month: "numeric" } }).split("/").reverse().join("-"))
@@ -434,12 +433,51 @@ export class InvoicesMetrics {
             }
         }
 
-        // Return null if filterBy is not provided
-        if (!filterBy) return [];
+        if (!filterBy) {
+            this.utils.deleteQueryParams(this.QUERY_PARAMS_FILTER_BY_KEY);
+            this.utils.deleteQueryParams(this.QUERY_PARAMS_FILTER_VALUE_KEY);
+
+            // Default value
+            const sortedInvoices = invoices.sort((invoiceA, invoiceB) => Number(new Date(invoiceA.issueDate)) - Number(new Date(invoiceB.issueDate)));
+            const firstDate = new Date(sortedInvoices[0].issueDate)
+            const lastDate = new Date(sortedInvoices[sortedInvoices.length - 1].issueDate)
+
+            const labels = []
+            const currentDate = new Date(firstDate)
+            while (currentDate <= lastDate) {
+                labels.push(`${utils.formatDate({ date: currentDate, locale: 'en-US', options: { month: 'short', day: '2-digit', year: "numeric" } })}`)
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+
+            const delinquencyDataset = { label: "Delinquency amount", data: [] }
+            const paidDataset = { label: "Paid Invoices", data: [] }
+
+            sortedInvoices.forEach(({ status, issueDate, value }) => {
+                const dateValue = new Date(issueDate)
+                const date = utils.formatDate({ date: dateValue, locale: 'en-US', options: { month: 'short', day: '2-digit', year: "numeric" } })
+                const indexOfDate = labels.indexOf(date)
+
+                if (indexOfDate === -1) return
+
+                if (status == "Payment overdue") {
+                    if (!delinquencyDataset["data"][indexOfDate]) delinquencyDataset["data"][indexOfDate] = value
+                    else delinquencyDataset["data"][indexOfDate] += value
+                }
+
+                if (status == "Payment made") {
+                    if (!paidDataset["data"][indexOfDate]) paidDataset["data"][indexOfDate] = value
+                    else paidDataset["data"][indexOfDate] += value
+                }
+
+            })
+
+            const datasets = [paidDataset, delinquencyDataset]
+
+            return { labels, datasets }
+        };
 
         // Apply the selected filter and return the filtered data
-        const data = filters[filterBy]();
-        return data;
+        return filters[filterBy]();
     }
 
     /**
